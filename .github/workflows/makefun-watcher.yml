@@ -1,0 +1,25 @@
+# Pengawas kompetisi baru make.fun — cek tiap 30 menit
+# Repo: denisyky/Agent. Tidak butuh secret: hanya membaca API publik make.fun
+# (GET /api/competitions) dan mencatat hasilnya ke log. Tidak submit apa pun.
+# Dibuat 14 Nov 2026 sebagai workflow pertama Studio AI gratis.
+
+name: makefun-new-competitions-watch
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check-new-competitions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check for new competitions
+        run: |
+          curl -sS https://make.fun/api/competitions > /tmp/competitions.json
+          echo "Competitions fetched: $(wc -c < /tmp/competitions.json) bytes"
+          # TODO: bandingkan dengan daftar sebelumnya (mis. artefak/cache Actions)
+          # dan beri notifikasi saat ada kompetisi baru.
+      - name: Summary
+        run: echo "Watch run done — see log for new competitions."
